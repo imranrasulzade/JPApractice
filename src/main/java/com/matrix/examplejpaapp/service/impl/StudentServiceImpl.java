@@ -1,6 +1,6 @@
 package com.matrix.examplejpaapp.service.impl;
 
-import com.matrix.examplejpaapp.exception.StudentNotFoundException;
+import com.matrix.examplejpaapp.exception.NotFoundException;
 import com.matrix.examplejpaapp.entity.Student;
 import com.matrix.examplejpaapp.mapper.StudentMapper;
 import com.matrix.examplejpaapp.model.dto.StudentDto;
@@ -19,7 +19,7 @@ public class StudentServiceImpl implements StudentService {
     public StudentDto getStudentById(Integer id){
         return studentRepository.findById(id)
                 .map(studentMapper::toStudentDto)
-                .orElseThrow(StudentNotFoundException::new);
+                .orElseThrow(NotFoundException::new);
     }
 
     public StudentDto addStudent(StudentDto studentDto){
@@ -33,14 +33,14 @@ public class StudentServiceImpl implements StudentService {
             Student student = studentMapper.toStudent(studentDto);
             return studentMapper.toStudentDto(studentRepository.save(student));
         }else
-            throw new StudentNotFoundException();
+            throw new NotFoundException();
     }
 
     public void deleteStudent(StudentDto studentDto){
         studentRepository.deleteById(studentDto.getId());
     }
 
-    public List<StudentDto> getAllStudent() throws StudentNotFoundException{
+    public List<StudentDto> getAllStudent() throws NotFoundException {
         return studentRepository.findAll()
                 .stream().map(studentMapper::toStudentDto)
                 .toList();
