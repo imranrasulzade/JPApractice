@@ -12,7 +12,8 @@ import java.io.NotActiveException;
 
 @SpringBootApplication
 @RequiredArgsConstructor
-public class ExampleJpaAppApplication {
+public class
+ExampleJpaAppApplication {
 
 	private final ProjectRepository repository;
 	public static void main(String[] args) {
