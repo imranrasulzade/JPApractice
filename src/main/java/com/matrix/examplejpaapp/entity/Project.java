@@ -14,6 +14,6 @@ public class Project {
     private Integer id;
     private String name;
     @JoinColumn(name = "student_id")
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Student student;
 }
