@@ -1,10 +1,12 @@
 package com.matrix.examplejpaapp.service.impl;
 
 import com.matrix.examplejpaapp.entity.Project;
-import com.matrix.examplejpaapp.exception.NotFoundException;
+import com.matrix.examplejpaapp.entity.Student;
+import com.matrix.examplejpaapp.exception.ProjectNotFoundException;
 import com.matrix.examplejpaapp.mapper.ProjectMapper;
 import com.matrix.examplejpaapp.model.dto.ProjectDto;
 import com.matrix.examplejpaapp.repository.ProjectRepository;
+import com.matrix.examplejpaapp.repository.StudentRepository;
 import com.matrix.examplejpaapp.service.ProjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,23 +18,28 @@ import java.util.List;
 public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepository;
+    private final StudentRepository studentRepository;
     private final ProjectMapper projectMapper;
     @Override
     public ProjectDto getProjectById(Integer id) {
         return projectRepository.findById(id)
                 .map(projectMapper::toProjectDto)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(ProjectNotFoundException::new);
     }
 
     @Override
     public ProjectDto addProject(ProjectDto projectDto) {
+        //Student student = studentRepository.findById(projectDto.getStudentId()).orElseThrow(NotFoundException::new);
         Project project = projectMapper.toProject(projectDto);
+        //project.setStudent(student);
         return projectMapper.toProjectDto(projectRepository.save(project));
     }
 
     @Override
     public ProjectDto updateProject(ProjectDto projectDto) {
+        Student student = studentRepository.findById(projectDto.getStudentId()).orElseThrow(ProjectNotFoundException::new);
         Project project = projectMapper.toProject(projectDto);
+        project.setStudent(student);
         return projectMapper.toProjectDto(projectRepository.save(project));
     }
 

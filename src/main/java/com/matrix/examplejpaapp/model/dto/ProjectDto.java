@@ -9,4 +9,5 @@ public class ProjectDto {
     private Integer id;
     private String projectName;
     private String studentFullName;
+    private Integer studentId;
 }

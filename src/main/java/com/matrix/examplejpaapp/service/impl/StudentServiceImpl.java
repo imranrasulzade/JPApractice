@@ -2,10 +2,12 @@ package com.matrix.examplejpaapp.service.impl;
 
 import com.matrix.examplejpaapp.exception.NotFoundException;
 import com.matrix.examplejpaapp.entity.Student;
+import com.matrix.examplejpaapp.exception.StudentNotFoundException;
 import com.matrix.examplejpaapp.mapper.StudentMapper;
 import com.matrix.examplejpaapp.model.dto.StudentDto;
 import com.matrix.examplejpaapp.repository.StudentRepository;
 import com.matrix.examplejpaapp.service.StudentService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +15,14 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class StudentServiceImpl implements StudentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
     public StudentDto getStudentById(Integer id){
         return studentRepository.findById(id)
                 .map(studentMapper::toStudentDto)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(StudentNotFoundException::new);
     }
 
     public StudentDto addStudent(StudentDto studentDto){
@@ -33,7 +36,7 @@ public class StudentServiceImpl implements StudentService {
             Student student = studentMapper.toStudent(studentDto);
             return studentMapper.toStudentDto(studentRepository.save(student));
         }else
-            throw new NotFoundException();
+            throw new StudentNotFoundException();
     }
 
     public void deleteStudent(StudentDto studentDto){

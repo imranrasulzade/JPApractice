@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Entity
-@Table(name = "students")
+@Table
 @Data
 public class Student {
     @Id
@@ -17,8 +17,8 @@ public class Student {
     private String city;
     private Integer status;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Project> projects;
+
 
 }
