@@ -1,0 +1,1 @@
+insert into ishciler (id, name) values (1, "Arif");

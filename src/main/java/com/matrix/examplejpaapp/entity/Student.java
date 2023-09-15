@@ -18,6 +18,7 @@ public class Student {
     private Integer status;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @PrimaryKeyJoinColumn
     private List<Project> projects;
 
 

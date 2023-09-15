@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20230911-01
+      author: imran
+      changes:
+        - createTable:
+            tableName: ish
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: user_primary_id
+              - column:
+                  name: name
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
