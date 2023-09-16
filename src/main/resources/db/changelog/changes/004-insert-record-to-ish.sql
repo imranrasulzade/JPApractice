@@ -1,0 +1,1 @@
+insert into ish(id, name) values (1, "Test");
