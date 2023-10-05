@@ -1,14 +1,15 @@
 package com.matrix.examplejpaapp;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
-
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootApplication
+@RequiredArgsConstructor
 public class ExampleJpaAppApplication {
+	private final BCryptPasswordEncoder passwordEncoder;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ExampleJpaAppApplication.class, args);
@@ -16,8 +17,10 @@ public class ExampleJpaAppApplication {
 	}
 
 //	@Override
-//	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-//		return application.sources(ExampleJpaAppApplication.class);
+//	public void run(String... args) throws Exception {
+//		System.out.println(passwordEncoder.encode("teymur"));
+//		System.out.println(passwordEncoder.encode("ali"));
+//		System.out.println(passwordEncoder.encode("elchin"));
+//		System.out.println(passwordEncoder.encode("huseyn"));
 //	}
-
 }
