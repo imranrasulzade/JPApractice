@@ -1,40 +1,65 @@
 package com.matrix.examplejpaapp.configuration;
 
+import com.matrix.examplejpaapp.filter.CustomFilter;
+import com.matrix.examplejpaapp.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import java.util.List;
 
 @Configuration
+@RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
-
-//    @Bean
-//    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-//        http.authorizeHttpRequests(authorize -> authorize
-//                .requestMatchers("student/**").permitAll());
-//        return http.build();
-//    }
-
 
     @Bean
     public static BCryptPasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 
+    private final List<AuthService> authServices;
+
+    private final CustomUserDetailsService userDetailsService;
+
+
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder noOpPasswordEncoder)
+            throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(noOpPasswordEncoder);
+        return authenticationManagerBuilder.build();
+    }
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.apply(new JwtAuthFilterConfigurerAdapter(authServices));
+        http.addFilterAfter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class);
         http.csrf(csrf->csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         authorize -> authorize
+                                .requestMatchers( "/api/v1/auth/**",
+                                        "/v2/api-docs",
+                                        "/v3/api-docs",
+                                        "/v3/api-docs/**",
+                                        "/swagger-resources",
+                                        "/swagger-resources/**",
+                                        "/configuration/ui",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html").permitAll()
+                                .requestMatchers("/rest/auth/**").permitAll()
                                 .requestMatchers("/student/**").hasAnyAuthority("ADMIN")
                                 .requestMatchers("/project/**").hasAnyAuthority("OPERATOR")
                 ).exceptionHandling(exceptionHandling -> exceptionHandling
@@ -49,6 +74,7 @@ public class SecurityConfig {
                 return http.build();
 
     }
+
 
     //InMemory
 //    @Bean

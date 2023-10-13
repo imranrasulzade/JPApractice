@@ -1,15 +1,20 @@
 package com.matrix.examplejpaapp;
 
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.security.Key;
+
 @SpringBootApplication
 @RequiredArgsConstructor
 public class ExampleJpaAppApplication {
 	private final BCryptPasswordEncoder passwordEncoder;
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(ExampleJpaAppApplication.class, args);
