@@ -10,15 +10,15 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
-@Slf4j
-@Component
-public class CustomFilter extends HttpFilter {
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        log.info("request starting custom filter");
-
-        chain.doFilter(request, response);
-
-        log.info("test");
-    }
-}
+//@Slf4j
+//@Component
+//public class CustomFilter extends HttpFilter {
+//    @Override
+//    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+//        log.info("request starting custom filter");
+//
+//        chain.doFilter(request, response);
+//
+//        log.info("test");
+//    }
+//}

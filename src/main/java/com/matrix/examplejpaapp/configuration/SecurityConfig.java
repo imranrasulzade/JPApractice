@@ -1,6 +1,5 @@
 package com.matrix.examplejpaapp.configuration;
 
-import com.matrix.examplejpaapp.filter.CustomFilter;
 import com.matrix.examplejpaapp.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -33,20 +31,26 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
 
+    private final JwtAuthorizationFilter jwtAuthorizationFilter;
+
+
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder noOpPasswordEncoder)
+    public AuthenticationManager authenticationManager(HttpSecurity http, BCryptPasswordEncoder passwordEncoder)
             throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
-        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(noOpPasswordEncoder);
+        authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
         return authenticationManagerBuilder.build();
     }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.apply(new JwtAuthFilterConfigurerAdapter(authServices));
-        http.addFilterAfter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class);
+//        http.apply(new JwtAuthFilterConfigurerAdapter(authServices));
+//        http.addFilterAfter(new CustomFilter(), UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(jwtAuthorizationFilter,UsernamePasswordAuthenticationFilter.class);
+
         http.csrf(csrf->csrf.disable())
+                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(
                         authorize -> authorize
@@ -59,9 +63,9 @@ public class SecurityConfig {
                                         "/configuration/ui",
                                         "/swagger-ui/**",
                                         "/swagger-ui.html").permitAll()
-                                .requestMatchers("/rest/auth/**").permitAll()
-                                .requestMatchers("/student/**").hasAnyAuthority("ADMIN")
-                                .requestMatchers("/project/**").hasAnyAuthority("OPERATOR")
+                                .requestMatchers("/authorization/**").permitAll()
+                                .requestMatchers("/student/**").hasAnyAuthority("ROLE_ADMIN")
+                                .requestMatchers("/project/**").hasAnyAuthority("ROLE_OPERATOR")
                 ).exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint((request, response, authException) ->
                                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)

@@ -1,5 +1,6 @@
 package com.matrix.examplejpaapp.configuration;
 
+import com.matrix.examplejpaapp.entity.Authority;
 import com.matrix.examplejpaapp.entity.Student;
 import com.matrix.examplejpaapp.repository.StudentRepository;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -23,8 +25,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Student user = userRepository.findByUsername(username).orElseThrow();
         List<String> roles = new ArrayList<>();
-        roles.add("ADMIN");
-        roles.add("OPERATOR");
+        Set<Authority> authorities = user.getAuthorities();
+        for (Authority authority : authorities) {
+            roles.add(authority.getName());
+        }
         UserDetails userDetails =
                 org.springframework.security.core.userdetails.User.builder()
                         .username(user.getUsername())

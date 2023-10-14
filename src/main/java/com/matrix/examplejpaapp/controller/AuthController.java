@@ -4,37 +4,34 @@ import com.matrix.examplejpaapp.entity.Student;
 import com.matrix.examplejpaapp.model.dto.ErrorRes;
 import com.matrix.examplejpaapp.model.dto.LoginReq;
 import com.matrix.examplejpaapp.model.dto.LoginRes;
+import com.matrix.examplejpaapp.repository.StudentRepository;
 import com.matrix.examplejpaapp.service.JwtUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
-@RequestMapping("/rest/auth")
+@RequestMapping("/authorization")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
 
+    private final StudentRepository studentRepository;
 
-    private JwtUtil jwtUtil;
-    public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
+    private final JwtUtil jwtUtil;
 
-    }
 
     @ResponseBody
-    @RequestMapping(value = "/login",method = RequestMethod.POST)
+    @PostMapping("login")
     public ResponseEntity login(@RequestBody LoginReq loginReq)  {
 
         try {
@@ -45,9 +42,11 @@ public class AuthController {
             String email = authentication.getName();
             Student user = new Student(email,"");
             String token = jwtUtil.createToken(user);
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
             LoginRes loginRes = new LoginRes(email,token);
 
-            return ResponseEntity.ok(loginRes);
+            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(loginRes);
 
         }catch (BadCredentialsException e){
             ErrorRes errorResponse = new ErrorRes(HttpStatus.BAD_REQUEST,"Invalid username or password");
